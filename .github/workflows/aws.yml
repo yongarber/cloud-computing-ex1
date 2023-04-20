@@ -12,12 +12,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        
-      - name: Add EC2 instance to known_hosts
-        uses: webfactory/ssh-agent@v0.5.0
-        with:
-          hostname: ${{ secrets.EC2_HOST }}
-          public_key: ${{ secrets.EC2_PUBLIC_KEY }}
       
       - name: Install dependencies
         run: |
