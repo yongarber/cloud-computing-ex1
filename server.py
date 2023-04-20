@@ -43,6 +43,7 @@ def new_ticket():
     return '''
             <h1>The ticketId value is: {}</h1>'''.format(ticket_id_val)
 
+
 @app.route('/exit', methods=['POST'])
 def exit_ticket():
     ticketId = int(request.args.get('ticketId')) - 1
