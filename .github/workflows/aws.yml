@@ -31,5 +31,6 @@ jobs:
       - name: Deploy code to EC2 instance
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} 'mkdir -p ~/parkingLot-dor-yon'
-          scp -o StrictHostKeyChecking=no -r . ubuntu@${{ secrets.EC2_HOST }}:~/parkingLot-dor-yon/
+          scp -o StrictHostKeyChecking=no -r * ubuntu@${{ secrets.EC2_HOST }}:~/parkingLot-dor-yon/
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} 'cd ~/parkingLot-dor-yon && nohup python3 server.py > server.log &'
+          
