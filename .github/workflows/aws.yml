@@ -12,6 +12,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        
+      - name: Add EC2 instance to known_hosts
+        uses: shimataro/known_hosts-action@v2.1.1
+        with:
+          hostname: ${{ secrets.EC2_HOST }}
+          public_key: ${{ secrets.EC2_PUBLIC_KEY }}
       
       - name: Install dependencies
         run: |
