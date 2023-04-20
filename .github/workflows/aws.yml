@@ -28,5 +28,5 @@ jobs:
           scp -o StrictHostKeyChecking=no -r * ubuntu@${{ secrets.EC2_HOST }}:~/parkingLot-dor-yon/
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} 'sudo apt-get update'
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} 'sudo apt-get install -y python3-pip'
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} 'pip3 install -r /parkingLot-dor-yon/requirements.txt'
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} 'pip3 install -r ~/parkingLot-dor-yon/requirements.txt'
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} 'cd ~/parkingLot-dor-yon && nohup python3 server.py > server.log &'
