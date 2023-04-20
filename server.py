@@ -60,5 +60,5 @@ def exit_ticket():
             <h1>The cost is: {}</h1>'''.format(plate_val_return, parkingLot_val_return, total_time_return, cost_val_return)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=443)
     
