@@ -25,7 +25,7 @@ def cost(entry_timestamp):
     return(minutes_in_parkingLot, cost)
 
 
-@app.route('/entry', methods=['GET','POST'])
+@app.route('/entry', methods=['POST'])
 def new_ticket():
     # if key doesn't exist, returns None
     plate_val = request.args.get('plate')
@@ -43,7 +43,7 @@ def new_ticket():
     return '''
             <h1>The ticketId value is: {}</h1>'''.format(ticket_id_val)
 
-@app.route('/exit', methods=['GET','POST'])
+@app.route('/exit', methods=['POST'])
 def exit_ticket():
     ticketId = int(request.args.get('ticketId')) - 1
     #testing cost function
