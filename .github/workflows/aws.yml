@@ -21,7 +21,7 @@ jobs:
       - name: Add EC2 instance to known hosts
         run: |
           echo "${{ secrets.EC2_HOST }} $(ssh-keyscan -t rsa ${{ secrets.EC2_HOST }})" >> ~/.ssh/known_hosts
-
+      
       - name: Deploy code to EC2 instance
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} 'mkdir -p ~/parkingLot-dor-yon'
@@ -29,4 +29,5 @@ jobs:
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} 'sudo apt-get update'
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} 'sudo apt-get install -y python3-pip'
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} 'pip3 install -r ~/parkingLot-dor-yon/requirements.txt'
-          ssh -n -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} 'cd ~/parkingLot-dor-yon && nohup python3 server.py > server.log &'
+          ssh -n -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} 'cd ~/parkingLot-dor-yon && nohup python3 server.py > server.log 2>&1 &'
+          exit
