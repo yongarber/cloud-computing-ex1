@@ -1,5 +1,5 @@
 name: Deploy to EC2 Yon
- 
+
 on:
   push:
     branches:
