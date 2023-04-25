@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -30,7 +30,7 @@ jobs:
         
       - name: Create EC2 key pair
         id: create-ec2-key-pair
-        uses: aws-actions/create-ec2-key-pair@v1
+        uses: aws-actions/create-ec2-key-pair@v2
         with:
           key-name: your-aws-key-name-$(date +%Y%m%d)-${{ github.run_number }}
       - name: Retrieve private key from SSM parameter
@@ -47,7 +47,7 @@ jobs:
 
     
       - name: Create security group
-        uses: aws-actions/create-security-group@v1
+        uses: aws-actions/create-security-group@v2
         with:
           group-name: our-security-group-$(date +%Y%m%d)-${{ github.run_number }}
           description: A security group for your EC2 instance
@@ -75,7 +75,7 @@ jobs:
             ]
     
       - name: Start EC2 instance
-        uses: aws-actions/setup-ec2@v1
+        uses: aws-actions/setup-ec2@v2
         with:
           access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
