@@ -1,0 +1,106 @@
+name: EC2 instance setup
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Get VPC ID
+        id: get-vpc-id
+        run: echo "::set-output name=vpc_id::$(aws ec2 describe-vpcs --filters "Name=isDefault,Values=true" --query "Vpcs[].VpcId" --output text)"
+    
+      - name: Get subnet ID
+        id: get-subnet-id
+        run: echo "::set-output name=subnet_id::$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=${{ steps.get-vpc-id.outputs.vpc_id }}" --query "Subnets[].SubnetId" --output text)"
+        
+      - name: Create EC2 key pair
+        id: create-ec2-key-pair
+        uses: aws-actions/create-ec2-key-pair@v1
+        with:
+          key-name: your-aws-key-name-$(date +%Y%m%d)-${{ github.run_number }}
+      - name: Retrieve private key from SSM parameter
+        run: |
+          AWS_REGION= us-east-1
+          PRIVATE_KEY=$(aws ssm get-parameter --name ${{ steps.create-ec2-key-pair.outputs.private_key }} --with-decryption --query "Parameter.Value" --output text)
+          echo "PRIVATE_KEY=$PRIVATE_KEY" >> $GITHUB_ENV
+      - name: Store private key in GitHub secrets
+        uses: actions/secrets@v1
+        with:
+          secret_name: AWS_PRIVATE_KEY
+          secret_value: ${{ env.PRIVATE_KEY }}
+    
+
+    
+      - name: Create security group
+        uses: aws-actions/create-security-group@v1
+        with:
+          group-name: our-security-group-$(date +%Y%m%d)-${{ github.run_number }}
+          description: A security group for your EC2 instance
+          vpc-id: ${{ steps.get-vpc-id.outputs.vpc_id }}
+          ingress-permissions: |
+            [
+              {
+                "IpProtocol": "tcp",
+                "FromPort": 22,
+                "ToPort": 22,
+                "IpRanges": [{"CidrIp": "0.0.0.0/0"}]
+              },
+              {
+                "IpProtocol": "tcp",
+                "FromPort": 5000,
+                "ToPort": 5000,
+                "IpRanges": [{"CidrIp": "0.0.0.0/0"}]
+              },
+              {
+                "IpProtocol": "tcp",
+                "FromPort": 443,
+                "ToPort": 443,
+                "IpRanges": [{"CidrIp": "0.0.0.0/0"}]
+              }
+            ]
+    
+      - name: Start EC2 instance
+        uses: aws-actions/setup-ec2@v1
+        with:
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ami-id: ami-0c55b159cbfafe1f0 # free tier Ubuntu Server 20.04 LTS AMI
+          instance-type: t2.micro
+          security-group: ${{ steps.create-security-group.outputs.group-name }}
+          subnet-id: ${{ steps.get-subnet-id.outputs.subnet_id }}
+          key-name: ${{ steps.create-ec2-key-pair.outputs.key_name }}
+          region: us-east-1
+          tag-specifications: 'ResourceType=instance,Tags=[{Key=Name,Value=github-actions-ec2-instance}]'
+    
+      - name: Wait for instance to start
+        uses: aws-actions/wait-for-ec2@v1
+        with:
+          state: running
+    
+      - name: SSH into EC2 instance
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ steps.start-ec2.outputs.public_ip }}
+          username: ubuntu
+          key: ${{ secrets.AWS_PRIVATE_KEY }}
+          port: 22
+          script: |
+            git clone https://github.com/your-username/your-repo.git
+            cd your-repo
+            pip install -r requirements.txt
+            python server.py
