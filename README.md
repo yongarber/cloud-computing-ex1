@@ -9,5 +9,5 @@ This repo has 4 components:
 
 4. server.py the application to be running on the EC2 instance. 
 
-5. Logs Output- example of one of the execution logs that we got. 
+5. Logs_Output- example of one of the execution logs that we got. 
 
