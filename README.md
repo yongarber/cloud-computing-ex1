@@ -1,6 +1,6 @@
 # cloud-computing-ex1
 
-This repo has 4 components:
+This repo has 5 components:
 1. setup.sh file which has the requiered functionalities on your PC (developed on Mac).
 
 2.requierments.txt file to be uploaded and installed on thee EC2 instance.
