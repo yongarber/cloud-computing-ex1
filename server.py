@@ -39,26 +39,23 @@ def new_ticket():
     ticket_id_val = len(plate)
     ticket_id.append(ticket_id_val)
         
-    # TODO- insert plate, parkingLot, and current_timestamp into DB with a new unique ID which will be returned as the TicketID.
     return '''
-            <h1>The ticketId value is: {}</h1>'''.format(ticket_id_val)
+            The ticketId value is: {}'''.format(ticket_id_val)
 
 
 @app.route('/exit', methods=['POST'])
 def exit_ticket():
     ticketId = int(request.args.get('ticketId')) - 1
-    #testing cost function
     plate_val_return = plate[ticketId]
     parkingLot_val_return = parkingLot[ticketId]
     entry_timestamp_val_return = entry_timestamp[ticketId]
     total_time_return,cost_val_return = cost(entry_timestamp_val_return)
 
-    # TODO- insert plate and parkingLot into DB with a new unique ID which will be returned as the ticketId.
     return '''
-            <h1>The plate number value is: {}</h1>
-            <h1>The parking lot id is: {}</h1>
-            <h1>The total parked time in minutes is: {}</h1>
-            <h1>The cost is: {}</h1>'''.format(plate_val_return, parkingLot_val_return, total_time_return, cost_val_return)
+            The plate number value is: {}
+            The parking lot id is: {}
+            The total parked time in minutes is: {}
+            The cost is: {}'''.format(plate_val_return, parkingLot_val_return, total_time_return, cost_val_return)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=443)
